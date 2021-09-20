@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "aimless-nerd"
+  },
+  "targets": {
+    "aimless-nerd": {
+      "hosting": {
+        "default": [
+          "bike-aimless-nerd"
+        ]
+      }
+    }
+  }
+}
