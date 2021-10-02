@@ -8,18 +8,9 @@
     </div>
     <div class="is-centered">
       <h1>some resources i love</h1>
-      <div>
-        <a href="https://www.sheldonbrown.com/" target="_">sheldownbrown.com</a>
+      <div v-for="(item, index) in links" :key="index" :value="item.url">
+        <a :href="item.url" target="_">{{ item.label }}</a>
       </div>
-      <div>
-        <a href="https://www.stevehoggbikefitting.com/" target="_">
-          stevehoggbikefitting.com
-        </a>
-      </div>
-
-      <!-- <a href="https://www.sheldonbrown.com/" target="_">sheldownbrown.com</a>
-      <a href="https://www.sheldonbrown.com/" target="_">sheldownbrown.com</a>
-      <a href="https://www.sheldonbrown.com/" target="_">sheldownbrown.com</a> -->
     </div>
   </div>
 </template>
@@ -30,5 +21,21 @@
 export default {
   name: "Home",
   components: {},
+  data: () => ({
+    links: [
+      {
+        url: "https://www.sheldonbrown.com/",
+        label: "sheldownbrown.com",
+      },
+      {
+        url: "https://www.stevehoggbikefitting.com/",
+        label: "stevehoggbikefitting.com",
+      },
+      {
+        url: "https://www.aero-coach.co.uk/learn#beginhere",
+        label: "aero-coach.co.uk",
+      },
+    ],
+  }),
 };
 </script>
