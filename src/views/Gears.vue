@@ -16,32 +16,14 @@
     <!-- chart here -->
     <div class="columns overflow-x-scroll">
       <div class="column" v-for="(table, index) in tables" :key="table.id">
-        <div class="table-header columns is-vcentered is-centered">
-          <span class="column table-header-label">
-            Gear Combination #{{ index + 1 }}
-          </span>
-          <b-tooltip
-            class="column is-narrow"
-            label="Close gear combination"
-            position="is-left"
-          >
-            <b-button
-              v-if="tables.length > 1"
-              @click="removeGearTable(table.id)"
-              type="is-danger is-small"
-              outlined
-            >
-              <b-icon pack="fas" icon="times"></b-icon>
-            </b-button>
-          </b-tooltip>
-        </div>
         <GearTable
+          v-bind:index="index"
+          v-bind:show-close="tables.length > 1"
           v-on:change-gears="updateTable($event, table.id)"
+          v-on:close-table="removeGearTable(table.id)"
         ></GearTable>
       </div>
-      <!-- <GearTable class="column"></GearTable> -->
     </div>
-    <!-- <Line :chartdata="chartData" :options="chartOptions"></Line> -->
     <BikeLineChart
       :chartData="chartData"
       :options="chartOptions"
@@ -75,6 +57,24 @@ export default {
         }),
       ];
       this.fillData();
+      // this.chartData = {
+      //   datasets: [
+      //     {
+      //       label: 'he',
+      //       data: [
+      //         { x: 1, y: 1 },
+      //         { x: 2, y: 2 },
+      //       ],
+      //     },
+      //     {
+      //       label: 'ho',
+      //       data: [
+      //         { x: 1, y: 2 },
+      //         { x: 2, y: 3 },
+      //       ],
+      //     },
+      //   ],
+      // };
     },
     fillData() {
       // add options on x data
@@ -83,6 +83,8 @@ export default {
 
       const datasets = this.tables
         .map(({ gears }, index) => {
+          const hue = gears[0]?.hue || this.randomHue();
+
           return [...new Set(gears.map((gear) => gear.ring).flat())]
             .sort()
             .map((ring_) => {
@@ -90,7 +92,6 @@ export default {
               const data = gears
                 .filter(({ ring }) => ring_ === ring)
                 .map(({ ratio }) => ratio);
-              const hue = this.randomHue();
 
               return {
                 label,
@@ -102,12 +103,12 @@ export default {
         })
         .map((rawDatasets) =>
           rawDatasets.map((rawDataset, index, arr) => {
-            let selectedHue = "";
-            if (arr && arr.length && arr[0].hue) {
-              selectedHue = arr[0].hue;
-            }
-            const increment = 25 + 75 * ((index + 1) / arr.length);
-            const color = this.createHSL(selectedHue, increment / 100);
+            const increment = 100 * ((index + 1) / arr.length);
+            // const color = this.createHSL(rawDataset.hue, increment / 100);
+            const r = parseInt(rawDataset.hue.slice(1, 3), 16);
+            const g = parseInt(rawDataset.hue.slice(3, 5), 16);
+            const b = parseInt(rawDataset.hue.slice(5, 7), 16);
+            const color = `rgba(${r}, ${g}, ${b}, ${increment / 100})`;
             return {
               label: rawDataset.label,
               backgroundColor: color,

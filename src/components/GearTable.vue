@@ -1,273 +1,308 @@
 <template>
-  <div class="container">
+  <div>
+    <div class="table-header columns is-vcentered is-centered">
+      <div class="columns is-vcentered">
+        <span class="column table-header-label">
+          Gear Combination #{{ index + 1 }}
+        </span>
+        <v-swatches
+          class="column"
+          v-model="selectedColour"
+          show-fallback
+          fallback-input-type="color"
+          popover-x="right"
+          v-on:close="changeInputGears()"
+        ></v-swatches>
+      </div>
+      <b-tooltip
+        class="column is-narrow"
+        label="Close gear combination"
+        position="is-left"
+      >
+        <b-button
+          v-if="showClose"
+          @click="removeGearTable()"
+          type="is-danger is-small"
+          outlined
+        >
+          <b-icon pack="fas" icon="times"></b-icon>
+        </b-button>
+      </b-tooltip>
+    </div>
     <!-- TODO create add new table for comparison -->
     <!-- TODO move to component -->
     <!-- TODO add table -->
-    <span>
-      this is a gear calculator table (speed calculation coming soon.)
-    </span>
-    <div>
-      <ValidationObserver ref="div">
-        <div class="columns is-vcentered is-centered">
-          <b-dropdown
-            class="column"
-            v-model="selectedCassetteDropdown"
-            aria-role="list"
-            expanded
-            @change="selectCassette"
+    <div class="container">
+      <span>
+        this is a gear calculator table (speed calculation coming soon.)
+      </span>
+      <div>
+        <ValidationObserver ref="div">
+          <div class="columns is-vcentered is-centered">
+            <b-dropdown
+              class="column"
+              v-model="selectedCassetteDropdown"
+              aria-role="list"
+              expanded
+              @change="selectCassette"
+            >
+              <template #trigger="{ active }">
+                <b-button
+                  :label="
+                    !selectedCassetteDropdown
+                      ? 'Common cassettes'
+                      : selectedCassetteDropdown
+                  "
+                  type="is-primary"
+                  :icon-right="active ? 'menu-up' : 'menu-down'"
+                />
+              </template>
+
+              <b-dropdown-item
+                v-for="(cassette, index) in commonCassettes"
+                :key="index"
+                aria-role="listitem"
+                :value="cassette.value"
+              >
+                {{ cassette.label }}
+              </b-dropdown-item>
+            </b-dropdown>
+
+            <b-field class="column is-three-fifths">
+              <ValidationProvider
+                name="cassette"
+                :rules="vvalidateRules"
+                v-slot="{ errors }"
+              >
+                <b-input
+                  v-model="cassette"
+                  placeholder="Cassette Teeth (comma, space, dash separated)"
+                  @input="changeInputGears('cassette')"
+                  v-on:change="changeInputGears"
+                  :pattern="inputStringPattern"
+                ></b-input>
+                <span>{{ errors[0] }}</span>
+              </ValidationProvider>
+            </b-field>
+          </div>
+
+          <div class="columns is-vcentered is-centered">
+            <b-dropdown
+              class="column"
+              v-model="selectedChainringDropdown"
+              aria-role="list"
+              expanded
+              @change="selectChainrings"
+            >
+              <template #trigger="{ active }">
+                <b-button
+                  :label="
+                    !selectedChainringDropdown
+                      ? 'Common chainrings'
+                      : selectedChainringDropdown
+                  "
+                  type="is-primary"
+                  :icon-right="active ? 'menu-up' : 'menu-down'"
+                />
+              </template>
+
+              <b-dropdown-item
+                v-for="(ring, index) in commonChainrings"
+                :key="index"
+                aria-role="listitem"
+                :value="ring.value"
+              >
+                {{ ring.label }}
+              </b-dropdown-item>
+            </b-dropdown>
+
+            <b-field class="column is-three-fifths">
+              <ValidationProvider
+                name="chainrings"
+                :rules="vvalidateRules"
+                v-slot="{ errors }"
+              >
+                <b-input
+                  v-model="chainrings"
+                  placeholder="Chainrings (comma, space, dash separated)"
+                  @input="changeInputGears('chainring')"
+                  v-on:change="changeInputGears"
+                  :pattern="inputStringPattern"
+                ></b-input>
+                <span>{{ errors[0] }}</span>
+              </ValidationProvider>
+            </b-field>
+          </div>
+        </ValidationObserver>
+      </div>
+
+      <div>
+        <!-- labels here what are your gears -->
+        <!-- table here -->
+        <p>
+          {{ chainringArray.length }} x {{ cassetteArray.length }} ({{
+            chainringArray.length * cassetteArray.length
+          }}
+          speed)
+        </p>
+        <!-- <p>save here?</p> -->
+      </div>
+
+      <div>
+        <b-dropdown v-model="shownColumns" multiple aria-role="list">
+          <template #trigger>
+            <b-button type="is-primary" icon-right="menu-down">
+              Columns Shown ({{ shownColumns.length }})
+            </b-button>
+          </template>
+          <b-dropdown-item
+            v-for="(item, index) in columnsDropdown"
+            :key="index"
+            :value="item.field"
+            aria-role="listitem"
           >
-            <template #trigger="{ active }">
-              <b-button
-                :label="
-                  !selectedCassetteDropdown
-                    ? 'Common cassettes'
-                    : selectedCassetteDropdown
-                "
-                type="is-primary"
-                :icon-right="active ? 'menu-up' : 'menu-down'"
-              />
-            </template>
-
-            <b-dropdown-item
-              v-for="(cassette, index) in commonCassettes"
-              :key="index"
-              aria-role="listitem"
-              :value="cassette.value"
-            >
-              {{ cassette.label }}
-            </b-dropdown-item>
-          </b-dropdown>
-
-          <b-field class="column is-three-fifths">
-            <ValidationProvider
-              name="cassette"
-              :rules="vvalidateRules"
-              v-slot="{ errors }"
-            >
-              <b-input
-                v-model="cassette"
-                placeholder="Cassette Teeth (comma, space, dash separated)"
-                @input="changeInputGears('cassette')"
-                v-on:change="changeInputGears"
-                :pattern="inputStringPattern"
-              ></b-input>
-              <span>{{ errors[0] }}</span>
-            </ValidationProvider>
-          </b-field>
-        </div>
-
-        <div class="columns is-vcentered is-centered">
-          <b-dropdown
-            class="column"
-            v-model="selectedChainringDropdown"
-            aria-role="list"
-            expanded
-            @change="selectChainrings"
+            <span>{{ item.label }}</span>
+          </b-dropdown-item>
+        </b-dropdown>
+        <b-table
+          :data="data"
+          ref="multiSortTable"
+          :backend-sorting="backendSortingEnabled"
+          @sort="sortPressed"
+          @sorting-priority-removed="sortingPriorityRemoved"
+          :sort-multiple="multiColumnSortingEnabled"
+          :sort-multiple-data="sortingPriority"
+          :sort-multiple-key="customKey"
+          :mobile-cards="false"
+          narrowed
+          hoverable
+        >
+          <b-table-column
+            v-for="column in columns1"
+            :key="column.field"
+            :field="column.field"
+            :label="column.label"
+            :sortable="column.sortable"
+            :visible="getColumnVisibility(column.field)"
+            v-slot="props"
+            centered
           >
-            <template #trigger="{ active }">
-              <b-button
-                :label="
-                  !selectedChainringDropdown
-                    ? 'Common chainrings'
-                    : selectedChainringDropdown
-                "
-                type="is-primary"
-                :icon-right="active ? 'menu-up' : 'menu-down'"
-              />
-            </template>
+            {{ props.row[column.field] }}
+          </b-table-column>
 
-            <b-dropdown-item
-              v-for="(ring, index) in commonChainrings"
-              :key="index"
-              aria-role="listitem"
-              :value="ring.value"
-            >
-              {{ ring.label }}
-            </b-dropdown-item>
-          </b-dropdown>
-
-          <b-field class="column is-three-fifths">
-            <ValidationProvider
-              name="chainrings"
-              :rules="vvalidateRules"
-              v-slot="{ errors }"
-            >
-              <b-input
-                v-model="chainrings"
-                placeholder="Chainrings (comma, space, dash separated)"
-                @input="changeInputGears('chainring')"
-                v-on:change="changeInputGears"
-                :pattern="inputStringPattern"
-              ></b-input>
-              <span>{{ errors[0] }}</span>
-            </ValidationProvider>
-          </b-field>
-        </div>
-      </ValidationObserver>
-    </div>
-
-    <div>
-      <!-- labels here what are your gears -->
-      <!-- table here -->
-      <p>
-        {{ chainringArray.length }} x {{ cassetteArray.length }} ({{
-          chainringArray.length * cassetteArray.length
-        }}
-        speed)
-      </p>
-      <!-- <p>save here?</p> -->
-    </div>
-
-    <div>
-      <b-dropdown v-model="shownColumns" multiple aria-role="list">
-        <template #trigger>
-          <b-button type="is-primary" icon-right="menu-down">
-            Columns Shown ({{ shownColumns.length }})
-          </b-button>
-        </template>
-        <b-dropdown-item
-          v-for="(item, index) in columnsDropdown"
-          :key="index"
-          :value="item.field"
-          aria-role="listitem"
-        >
-          <span>{{ item.label }}</span>
-        </b-dropdown-item>
-      </b-dropdown>
-      <b-table
-        :data="data"
-        ref="multiSortTable"
-        :backend-sorting="backendSortingEnabled"
-        @sort="sortPressed"
-        @sorting-priority-removed="sortingPriorityRemoved"
-        :sort-multiple="multiColumnSortingEnabled"
-        :sort-multiple-data="sortingPriority"
-        :sort-multiple-key="customKey"
-        :mobile-cards="false"
-        narrowed
-        hoverable
-      >
-        <b-table-column
-          v-for="column in columns1"
-          :key="column.field"
-          :field="column.field"
-          :label="column.label"
-          :sortable="column.sortable"
-          :visible="getColumnVisibility(column.field)"
-          v-slot="props"
-          centered
-        >
-          {{ props.row[column.field] }}
-        </b-table-column>
-
-        <b-table-column
-          field="gear_number"
-          label="Gear Number"
-          sortable
-          v-slot="props"
-          :visible="getColumnVisibility('gear_number')"
-          centered
-          width="50"
-        >
-          {{ props.row.gear_number }}
-        </b-table-column>
-
-        <b-table-column
-          field="ring"
-          label="Chainring"
-          sortable
-          v-slot="props"
-          :visible="getColumnVisibility('ring')"
-          centered
-        >
-          <b-tag :type="props.row.ring_number % 2 ? 'is-success' : 'is-danger'">
-            {{ `${props.row.ring}t (${props.row.ring_number})` }}
-          </b-tag>
-        </b-table-column>
-
-        <b-table-column
-          class="cog-row-container"
-          field="cog"
-          label="Cog"
-          sortable
-          v-slot="props"
-          :visible="getColumnVisibility('cog')"
-          centered
-        >
-          <b-tag type="is-success" v-bind:style="getCogTagStyle(props.row.cog)">
-            {{ `${props.row.cog}t (${props.row.cog_number})` }}
-          </b-tag>
-        </b-table-column>
-
-        <b-table-column
-          field="ratio"
-          label="Ratio"
-          sortable
-          v-slot="props"
-          :visible="getColumnVisibility('ratio')"
-          centered
-        >
-          <b-tooltip
-            label="The bigger the ratio, the heavier the gear. Heavy gear = harder to pedal."
-            multilined
-            position="is-bottom"
+          <b-table-column
+            field="gear_number"
+            label="Gear Number"
+            sortable
+            v-slot="props"
+            :visible="getColumnVisibility('gear_number')"
+            centered
+            width="50"
           >
-            {{ props.row.ratio }}
-          </b-tooltip>
-        </b-table-column>
+            {{ props.row.gear_number }}
+          </b-table-column>
 
-        <b-table-column
-          field="diff_above"
-          label="% Diff gear above"
-          v-slot="props"
-          :visible="getColumnVisibility('diff_above')"
-          centered
-        >
-          <b-tooltip
-            label="The bigger the % change, the feel of pedalling (cadence) will be drastic. Ideal % change is 10-15% per gear change."
-            multilined
-            position="is-bottom"
+          <b-table-column
+            field="ring"
+            label="Chainring"
+            sortable
+            v-slot="props"
+            :visible="getColumnVisibility('ring')"
+            centered
           >
             <b-tag
-              v-if="!!props.row.diff_above"
-              :type="
-                props.row.diff_above > 9 && props.row.diff_above < 16
-                  ? 'is-success is-light'
-                  : 'is-danger is-light'
-              "
+              :type="props.row.ring_number % 2 ? 'is-success' : 'is-danger'"
             >
-              {{ props.row.diff_above }}%
+              {{ `${props.row.ring}t (${props.row.ring_number})` }}
             </b-tag>
-          </b-tooltip>
-        </b-table-column>
-        <b-table-column
-          field="diff_below"
-          :visible="getColumnVisibility('diff_below')"
-          label="% Diff gear below"
-          v-slot="props"
-          centered
-        >
-          <b-tooltip
-            label="The bigger the % change, the feel of pedalling (cadence) will be drastic. Ideal % change is 10-15% per gear change."
-            multilined
-            position="is-bottom"
+          </b-table-column>
+
+          <b-table-column
+            class="cog-row-container"
+            field="cog"
+            label="Cog"
+            sortable
+            v-slot="props"
+            :visible="getColumnVisibility('cog')"
+            centered
           >
             <b-tag
-              v-if="!!props.row.diff_below"
-              :type="
-                props.row.diff_below > 9 && props.row.diff_below < 16
-                  ? 'is-success is-light'
-                  : 'is-danger is-light'
-              "
+              type="is-success"
+              v-bind:style="getCogTagStyle(props.row.cog)"
             >
-              {{ props.row.diff_below }}%
+              {{ `${props.row.cog}t (${props.row.cog_number})` }}
             </b-tag>
-          </b-tooltip>
-        </b-table-column>
-        <!-- speed here -->
-      </b-table>
-    </div>
+          </b-table-column>
 
+          <b-table-column
+            field="ratio"
+            label="Ratio"
+            sortable
+            v-slot="props"
+            :visible="getColumnVisibility('ratio')"
+            centered
+          >
+            <b-tooltip
+              label="The bigger the ratio, the heavier the gear. Heavy gear = harder to pedal."
+              multilined
+              position="is-bottom"
+            >
+              {{ props.row.ratio }}
+            </b-tooltip>
+          </b-table-column>
+
+          <b-table-column
+            field="diff_above"
+            label="% Diff gear above"
+            v-slot="props"
+            :visible="getColumnVisibility('diff_above')"
+            centered
+          >
+            <b-tooltip
+              label="The bigger the % change, the feel of pedalling (cadence) will be drastic. Ideal % change is 10-15% per gear change."
+              multilined
+              position="is-bottom"
+            >
+              <b-tag
+                v-if="!!props.row.diff_above"
+                :type="
+                  props.row.diff_above > 9 && props.row.diff_above < 16
+                    ? 'is-success is-light'
+                    : 'is-danger is-light'
+                "
+              >
+                {{ props.row.diff_above }}%
+              </b-tag>
+            </b-tooltip>
+          </b-table-column>
+          <b-table-column
+            field="diff_below"
+            :visible="getColumnVisibility('diff_below')"
+            label="% Diff gear below"
+            v-slot="props"
+            centered
+          >
+            <b-tooltip
+              label="The bigger the % change, the feel of pedalling (cadence) will be drastic. Ideal % change is 10-15% per gear change."
+              multilined
+              position="is-bottom"
+            >
+              <b-tag
+                v-if="!!props.row.diff_below"
+                :type="
+                  props.row.diff_below > 9 && props.row.diff_below < 16
+                    ? 'is-success is-light'
+                    : 'is-danger is-light'
+                "
+              >
+                {{ props.row.diff_below }}%
+              </b-tag>
+            </b-tooltip>
+          </b-table-column>
+          <!-- speed here -->
+        </b-table>
+      </div>
+    </div>
     <!-- chart here -->
   </div>
 </template>
@@ -275,6 +310,7 @@
 <script>
 import orderBy from "lodash/orderBy";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
+import VSwatches from "vue-swatches";
 
 const columns = [
   // gear number
@@ -296,7 +332,15 @@ const columns = [
 
 export default {
   name: "GearTable",
-  components: { ValidationProvider, ValidationObserver },
+  components: {
+    ValidationProvider,
+    ValidationObserver,
+    VSwatches,
+  },
+  props: {
+    index: Number,
+    showClose: Boolean,
+  },
   data() {
     return {
       customKey: null,
@@ -342,6 +386,7 @@ export default {
       cassetteArray: [],
       // default data
       // label, value
+      selectedColour: "#000000",
       selectedChainringDropdown: null,
       selectedCassetteDropdown: null,
       commonChainrings: [
@@ -417,6 +462,7 @@ export default {
             cog_number: cogIdx + 1,
             cog,
             ratio: (ring / cog).toFixed(3),
+            hue: this.selectedColour,
           }))
         )
         .flat()
@@ -429,13 +475,13 @@ export default {
     },
   },
   methods: {
-    changeInputGears(textBox = '') {
+    changeInputGears(textBox = "") {
       // on change, change data
       switch (textBox) {
-        case 'cassette':
+        case "cassette":
           this.selectedCassetteDropdown = null;
           break;
-        case 'chainring':
+        case "chainring":
           this.selectedChainringDropdown = null;
           break;
       }
@@ -583,6 +629,41 @@ export default {
         sortingPriority.map((i) => i.field),
         sortingPriority.map((i) => i.order)
       ).map(this.calculateDataRatioDiff);
+    },
+
+    removeGearTable() {
+      this.$emit("close-table");
+    },
+
+    randomHue() {
+      // return "hsla(" + ~~(360 * Math.random()) + "," + "70%," + "60%, 1)";
+      return ~~(360 * Math.random());
+    },
+    createHSL(hue = this.randomHue(), alpha = 1) {
+      return `hsla(${hue}, 70%, 80%, ${alpha})`;
+    },
+    RGBtoHue(hexColor = "#000000") {
+      let r = hexColor.slice(1, 3);
+      let g = hexColor.slice(3, 5);
+      let b = hexColor.slice(5, 7);
+      r /= 255;
+      g /= 255;
+      b /= 255;
+      let cmin = Math.min(r, g, b);
+      let cmax = Math.max(r, g, b);
+      let delta = cmax - cmin;
+      let h = 0;
+      if (delta == 0) h = 0;
+      // Red is max
+      else if (cmax == r) h = ((g - b) / delta) % 6;
+      // Green is max
+      else if (cmax == g) h = (b - r) / delta + 2;
+      // Blue is max
+      else h = (r - g) / delta + 4;
+
+      h = Math.round(h * 60);
+      // Make negative hues positive behind 360°
+      if (h < 0) h += 360;
     },
   },
   created() {

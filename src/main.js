@@ -7,17 +7,18 @@ import router from './router'
 import store from './store'
 import { ValidationProvider, extend } from 'vee-validate'
 import { regex, required } from 'vee-validate/dist/rules';
+import 'vue-swatches/dist/vue-swatches.css'
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
-Vue.use(Buefy)
+Vue.use(Buefy);
 Vue.component('ValidationProvider', ValidationProvider);
 
 extend('required', {
   ...required,
   message: 'This field is required.'
 });
-extend('regex',{
+extend('regex', {
   ...regex,
   message: 'Invalid input.'
 });
