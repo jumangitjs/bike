@@ -380,7 +380,7 @@ export default {
         required: true,
         regex: "^([\\d\\s\\-;,\\|]*)$",
       },
-      chainrings: "54 40",
+      chainrings: "50 34",
       cassette: "11-12-13-14-15-17-19-21-24-27-30",
       chainringArray: [],
       cassetteArray: [],
@@ -424,6 +424,14 @@ export default {
         {
           label: "11-32 CS-HG500-10",
           value: "11-12-14-16-18-20-22-25-28-32",
+        },
+        {
+          label: "12-28 CS-HG500-10",
+          value: "12-13-14-15-17-19-21-23-25-28",
+        },
+        {
+          label: "12-30 CS-6700 ",
+          value: "12-13-14-15-17-19-21-24-27-30",
         },
         {
           label: "11-28 CS-HG400-9",
