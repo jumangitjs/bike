@@ -1,0 +1,23 @@
+[debug] [2021-10-02T03:35:47.954Z] ----------------------------------------------------------------------
+[debug] [2021-10-02T03:35:47.956Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\juman\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2021-10-02T03:35:47.956Z] CLI Version:   8.10.0
+[debug] [2021-10-02T03:35:47.956Z] Platform:      win32
+[debug] [2021-10-02T03:35:47.956Z] Node Version:  v12.18.0
+[debug] [2021-10-02T03:35:47.957Z] Time:          Sat Oct 02 2021 11:35:47 GMT+0800 (Philippine Standard Time)
+[debug] [2021-10-02T03:35:47.957Z] ----------------------------------------------------------------------
+[debug] [2021-10-02T03:35:47.957Z] 
+[debug] [2021-10-02T03:35:47.970Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-10-02T03:35:47.970Z] > authorizing via signed-in user
+[debug] [2021-10-02T03:35:47.970Z] [iam] checking project aimless-nerd for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2021-10-02T03:35:47.973Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/aimless-nerd:testIamPermissions  
+ {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2021-10-02T03:35:49.012Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Sat, 02 Oct 2021 03:35:49 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=815","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-10-02T03:35:49.014Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/aimless-nerd  
+ 
+[debug] [2021-10-02T03:35:49.524Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Sat, 02 Oct 2021 03:35:50 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-T051=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-10-02T03:35:49.525Z] [WARNING] Unable to fetch default resources. Falling back to project id (aimless-nerd)
+[info] 
+[info] === Deploying to 'aimless-nerd'...
+[info] 
+[info] i  deploying hosting 
+[info] Running command: npm run build
